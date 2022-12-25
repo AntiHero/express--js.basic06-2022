@@ -1,0 +1,29 @@
+{
+  "name": "express--js.basic.06.2022",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:AntiHero/express--js.basic06-2022.git",
+  "author": "Aleksandr Schemelev <prophreaker@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "start:dev": "nodemon -e ts --exec \"node -r ts-node/register --inspect-brk src/index.ts\""
+  },
+  "devDependencies": {
+    "@types/jest": "^29.2.4",
+    "@types/node": "^18.11.17",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard-with-typescript": "^24.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "*"
+  }
+}
