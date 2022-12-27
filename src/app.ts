@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cookieSession from 'cookie-session';
 import express, { Response, Request, NextFunction } from 'express';
 
-import { booksRouter } from './routes/booksRouter';
+import { apiRouter } from './routes/apiRouter';
 
 export const app = express();
 
@@ -17,10 +17,13 @@ app.use(
   })
 );
 
-app.use(express.static('public'));
-app.use('/books', booksRouter);
+if (process.env.DEPLOY_TO_VERCEL !== 'true') {
+  app.use(express.static('./public'));
+}
 
-app.get('/counter', (req, res) => {
+app.use('/api', apiRouter);
+
+app.get('/api/counter', (req, res) => {
   if (req.session) {
     if (req.session.counter === undefined) {
       req.session.counter = 0;
@@ -31,7 +34,10 @@ app.get('/counter', (req, res) => {
   res.send(JSON.stringify(req?.session?.counter));
 });
 
-app.use('*', express.static('public'));
+app.use('*', (_, res) => {
+  res.sendStatus(404);
+});
+
 app.use((_: Error, req: Request, res: Response, __: NextFunction) => {
   res.sendStatus(400);
 });

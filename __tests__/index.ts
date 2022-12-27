@@ -18,11 +18,11 @@ beforeEach(() => {
 });
 
 describe.skip('teting API', () => {
-  test('GET /books', async () => {
+  test('GET /api/books', async () => {
     expect.assertions(1);
 
     await api
-      .get('/books')
+      .get('/api/books')
       .expect(200)
       .expect('Content-Type', /json/)
       .then(function (res) {
@@ -30,7 +30,7 @@ describe.skip('teting API', () => {
       });
   });
 
-  test('POST /books', async () => {
+  test('POST /api/books', async () => {
     expect.assertions(2);
 
     const book: Omit<Book, 'id'> = {
@@ -40,7 +40,7 @@ describe.skip('teting API', () => {
     };
 
     await api
-      .get('/books')
+      .get('/api/books')
       .expect(200)
       .expect('Content-Type', /json/)
       .then(function (res) {
@@ -48,13 +48,13 @@ describe.skip('teting API', () => {
       });
 
     await api
-      .post('/books')
+      .post('/api/books')
       .send(book)
       .set('Accept', 'application/json')
       .expect(204);
 
     await api
-      .get('/books')
+      .get('/api/books')
       .expect(200)
       .expect('Content-Type', /json/)
       .then(function (res) {
@@ -64,17 +64,17 @@ describe.skip('teting API', () => {
 
   test('logger middleware should call console.log', async () => {
     jest.spyOn(console, 'log');
-    await api.get('/books/1').expect(200).expect('Content-Type', /json/);
+    await api.get('/api/books/1').expect(200).expect('Content-Type', /json/);
 
     expect(console.log).toHaveBeenCalledTimes(2);
     expect(console.log).toHaveBeenCalledWith('/books/1', ' ', 'GET');
   });
 
-  test('GET /counter should return 0', async () => {
+  test('GET /api/counter should return 0', async () => {
     api = supertestSession(app);
     expect.assertions(2);
 
-    await api.get('/counter').expect(200).expect('Content-Type', /text/);
+    await api.get('/api/counter').expect(200).expect('Content-Type', /text/);
 
     for (const cookie of api.cookies) {
       if (cookie.name === 'counter') {
@@ -120,9 +120,9 @@ describe('testing MongoDB', () => {
     await mongoose.connection.close();
   });
 
-  test('GET /books', async () => {
+  test('GET /api/books', async () => {
     await api
-      .get('/books')
+      .get('/api/books')
       .expect(200)
       .expect('Content-type', /json/)
       .then(function (res) {
@@ -134,11 +134,11 @@ describe('testing MongoDB', () => {
       });
   });
 
-  test('PUT /books/id', async () => {
+  test('PUT /api/books/id', async () => {
     const book = await BookModel.create(books[0]);
 
     await api
-      .put(`/books/${book._id}`)
+      .put(`/api/books/${book._id}`)
       .send({ ...books[0], year: 1950 })
       .expect(200)
       .expect('Content-type', /json/)

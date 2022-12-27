@@ -20,9 +20,8 @@ booksRouter.get('/', async (_, res) => {
 booksRouter.get('/:id', async (req, res) => {
   const id = req.params.id;
 
-  if (id) throw new Error('Not valid id');
-
   try {
+    if (!isValidObjectId(id)) throw new Error('Not valid id');
     const book = await Book.findById(id).exec();
 
     if (!book) return null;
@@ -38,10 +37,8 @@ booksRouter.put('/:id', async (req, res) => {
   const id = req.params.id;
   const { author, title, year } = req.body;
 
-  console.log(year);
-  if (!isValidObjectId(id)) throw new Error('Not valid id');
-
   try {
+    if (!isValidObjectId(id)) throw new Error('Not valid id');
     const book = await Book.findByIdAndUpdate(
       id,
       { author, title, year },
@@ -71,11 +68,10 @@ booksRouter.delete('/:id', async (req, res) => {
 
 booksRouter.post('/', async (req, res) => {
   const { author, title, year } = req.body;
-  console.log(author, title, year);
   try {
     await Book.create({ author, title, year });
 
-    res.sendStatus(204);
+    res.sendStatus(201);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
