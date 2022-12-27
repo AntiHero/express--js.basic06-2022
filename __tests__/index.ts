@@ -1,9 +1,15 @@
+import * as dotenv from 'dotenv';
+import mongoose from 'mongoose';
 import supertest from 'supertest';
 //@ts-ignore
 import supertestSession from 'supertest-session';
 
 import { app } from '../src/app';
 import books, { Book } from '../src/fakeDb';
+import { Book as BookModel } from '../src/models/Book';
+import { connectToMongoDB } from '../src/utils/connectToMongoDB';
+
+dotenv.config();
 
 let api: supertest.SuperTest<supertest.Test>;
 
@@ -11,7 +17,7 @@ beforeEach(() => {
   api = supertest(app);
 });
 
-describe('teting API', () => {
+describe.skip('teting API', () => {
   test('GET /books', async () => {
     expect.assertions(1);
 
@@ -79,5 +85,69 @@ describe('teting API', () => {
     }
 
     expect(api.cookies.length).toBe(2);
+  });
+});
+
+describe('testing MongoDB', () => {
+  const books = [
+    {
+      author: 'Wuthering Heights',
+      title: 'Pride and Prejudice',
+      year: 2004,
+    },
+    {
+      author: 'Edgar Alan Poe',
+      title: 'The Raven',
+      year: 1996,
+    },
+    {
+      author: 'Boris Pasternak',
+      title: 'Doctor Zhivago',
+      year: 1997,
+    },
+  ];
+
+  beforeEach(async () => {
+    await connectToMongoDB(process.env.MONGODB_URL_TEST as string).catch(
+      console.error
+    );
+
+    await BookModel.deleteMany({});
+    await BookModel.insertMany(books);
+  });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
+  test('GET /books', async () => {
+    await api
+      .get('/books')
+      .expect(200)
+      .expect('Content-type', /json/)
+      .then(function (res) {
+        expect(res.body).toStrictEqual([
+          { ...books[0], id: expect.anything() },
+          { ...books[1], id: expect.anything() },
+          { ...books[2], id: expect.anything() },
+        ]);
+      });
+  });
+
+  test('PUT /books/id', async () => {
+    const book = await BookModel.create(books[0]);
+
+    await api
+      .put(`/books/${book._id}`)
+      .send({ ...books[0], year: 1950 })
+      .expect(200)
+      .expect('Content-type', /json/)
+      .then(function (res) {
+        expect(res.body).toStrictEqual({
+          ...books[0],
+          id: String(book._id),
+          year: 1950,
+        });
+      });
   });
 });
