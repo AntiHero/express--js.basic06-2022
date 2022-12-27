@@ -50,8 +50,18 @@ describe('teting API', () => {
       .expect(200)
       .expect('Content-Type', /json/)
       .then(function (res) {
-        console.log(res.body);
         expect(res.body).toEqual(expect.arrayContaining([{ ...book, id: 4 }]));
       });
+  });
+
+  test('logger middleware', async () => {
+    jest.spyOn(console, 'log');
+    await api
+      .get('/books/1')
+      .expect(200)
+      .expect('Content-Type', /json/)
+
+    expect(console.log).toHaveBeenCalledTimes(2);
+    expect(console.log).toHaveBeenCalledWith("/books/1", " ", "GET");
   });
 });

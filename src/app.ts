@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import express, { Response, Request, NextFunction } from 'express';
 
 import books from './fakeDb';
+import { logger } from './middlewares/logger';
 import { idGenerator } from './utils/idGenerator';
 
 export const app = express();
@@ -11,13 +12,14 @@ export const app = express();
 
 // app.use(cors());
 app.use(bodyParser.json());
+// app.use(logger);
 app.use(express.static('public'));
 
 app.get('/books', (_, res) => {
   res.json(books);
 });
 
-app.get('/books/:id', (req, res) => {
+app.get('/books/:id', logger, (req, res) => {
   const id = Number(req.params.id);
 
   books[id - 1] ? res.json(books[id - 1]) : res.sendStatus(404);
