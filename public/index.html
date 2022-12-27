@@ -16,7 +16,7 @@
 
       try {
         const books = await fetch('http://localhost:9000/books').then(
-          response => response.json()
+          (response) => response.json()
         );
 
         for (const book of books) {

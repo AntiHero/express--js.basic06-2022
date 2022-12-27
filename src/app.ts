@@ -1,5 +1,6 @@
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import cookieSession from 'cookie-session';
 import express, { Response, Request, NextFunction } from 'express';
 
 import books from './fakeDb';
@@ -12,11 +13,28 @@ export const app = express();
 
 // app.use(cors());
 app.use(bodyParser.json());
+app.use(
+  cookieSession({
+    name: 'counter',
+    secret: 'awesome_secret',
+  })
+);
 // app.use(logger);
 app.use(express.static('public'));
 
 app.get('/books', (_, res) => {
   res.json(books);
+});
+
+app.get('/counter', (req, res) => {
+  if (req.session) {
+    if (req.session.counter === undefined) {
+      req.session.counter = 0;
+    } else {
+      req.session.counter++;
+    }
+  }
+  res.send(JSON.stringify(req?.session?.counter));
 });
 
 app.get('/books/:id', logger, (req, res) => {
